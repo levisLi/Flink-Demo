@@ -18,7 +18,11 @@ public class FlinkParamsConstants {
 
         public static final String DICOM_BOOTSTRAP_SERVERS = "kafka.dicom.bootstrapServers";
 
+        public static final String BOOTSTRAP_SERVERS = "kafka.bootstrapServers";
+
         public static final String GROUP_ID = "kafka.groupId";
+
+        public static final String TOPIC = "kafka.topic";
 
         public static final String OFFSET_TIMESTAMP = "kafka.offset.timestamp";
     }

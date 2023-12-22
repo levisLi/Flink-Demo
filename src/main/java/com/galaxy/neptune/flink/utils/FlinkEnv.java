@@ -13,10 +13,18 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.configuration.PipelineOptionsInternal;
 import org.apache.flink.configuration.RestOptions;
+import org.apache.flink.contrib.streaming.state.EmbeddedRocksDBStateBackend;
+import org.apache.flink.contrib.streaming.state.PredefinedOptions;
+import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
+import org.apache.flink.runtime.jobgraph.SavepointConfigOptions;
+import org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.rocksdb.RocksDB;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class FlinkEnv {
@@ -63,12 +71,18 @@ public class FlinkEnv {
         //1.获取执行环境
         Configuration flinkConfig = new Configuration();
         flinkConfig.setString("classloader.check-leaked-classloader","false");
+//        flinkConfig.setString(SavepointConfigOptions.SAVEPOINT_PATH, "");
 //        flinkConfig.setString(PipelineOptionsInternal.PIPELINE_FIXED_JOB_ID.key(),"fd72014d4c864993a2e5a9287b4a9c5d");
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(flinkConfig);
         env.enableCheckpointing(parameterTool.getLong(FlinkParamsConstants.CHECKPOINT.INTERVAL,60*1000L));
-        env.getCheckpointConfig().setCheckpointStorage(parameterTool.get(FlinkParamsConstants.CHECKPOINT.PATH, "hdfs://namespace-HA-1/flink/checkpoint/flinkDorisEngine"));
+        EmbeddedRocksDBStateBackend embededRocksDBStateBackend = new EmbeddedRocksDBStateBackend(true);
+        embededRocksDBStateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED_HIGH_MEM);
+        env.setStateBackend(embededRocksDBStateBackend);
+        env.getCheckpointConfig().setCheckpointStorage(new FileSystemCheckpointStorage(parameterTool.get(FlinkParamsConstants.CHECKPOINT.PATH, "hdfs://namespace-HA-1/flink/checkpoints/flink-demo")));
         env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
+        env.getCheckpointConfig().setExternalizedCheckpointCleanup(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
+//        env.disableOperatorChaining();
         return env;
     }
 
@@ -76,6 +90,7 @@ public class FlinkEnv {
         //1.获取执行环境
         Configuration flinkConfig = new Configuration();
         flinkConfig.setInteger(RestOptions.PORT.key(), 8081);
+        flinkConfig.setString(SavepointConfigOptions.SAVEPOINT_PATH, "file:///tmp/flink/checkpoint/fd72014d4c864993a2e5a9287b4a9c5d/chk-1/_metadata");
         flinkConfig.setString(PipelineOptionsInternal.PIPELINE_FIXED_JOB_ID.key(),"fd72014d4c864993a2e5a9287b4a9c5d");
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(flinkConfig);
         env.enableCheckpointing(60*1000L);

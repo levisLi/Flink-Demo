@@ -2,8 +2,6 @@ package com.galaxy.neptune.flink.source.generator;
 
 import com.alibaba.fastjson.JSONObject;
 import com.galaxy.neptune.flink.bean.DorisData;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.slf4j.Logger;

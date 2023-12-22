@@ -24,27 +24,12 @@ public class CustomKafkaSource {
 
 
     public static KafkaSource<Tuple2<String, String>> dataSourceStream(ParameterTool parameters) {
-        checkKafkaParams(parameters);
-        String instance = parameters.get(FlinkParamsConstants.RUN.INSTANCE);
+//        checkKafkaParams(parameters);
         String topic;
         String bootStrapServers;
         Properties kafkaProperties = new Properties();
-        if (instance.equals("Ks3")) {
-            topic = parameters.getRequired(FlinkParamsConstants.KAFKA.KS3_TOPICS);
-            bootStrapServers = parameters.getRequired(FlinkParamsConstants.KAFKA.KS3_BOOTSTRAP_SERVERS);
-            // TODO: 2023/3/20 生产环境ks3采集日志增加ssl机制校验
-            Properties envProperties = parameters.getProperties();
-            for (Object key : envProperties.keySet()) {
-                if (key.toString().startsWith("kafka.")) {
-                    String kafkaKey = key.toString().substring("kafka.".length(), key.toString().length());
-                    kafkaProperties.setProperty(kafkaKey, envProperties.getProperty(key.toString()));
-                }
-            }
-            LOG.info(kafkaProperties.toString());
-        } else {
-            topic = parameters.get(FlinkParamsConstants.KAFKA.DICOM_TOPICS);
-            bootStrapServers = parameters.getRequired(FlinkParamsConstants.KAFKA.DICOM_BOOTSTRAP_SERVERS);
-        }
+        topic = parameters.get(FlinkParamsConstants.KAFKA.TOPIC);
+        bootStrapServers = parameters.getRequired(FlinkParamsConstants.KAFKA.BOOTSTRAP_SERVERS);
         KafkaSourceBuilder<Tuple2<String, String>> kafkaSourceBuilder = KafkaSource.<Tuple2<String, String>>builder()
                 //关闭自动提交模式
                 .setProperty("enable.auto.commit", "false")
