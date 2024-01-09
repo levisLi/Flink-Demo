@@ -3,6 +3,7 @@ package com.galaxy.neptune.flink.utils;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ public class DateUtil {
 
     public final static DateTimeFormatter settleParseDateFormat =  DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public final static DateTimeFormatter settleParseFormat =  DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public final static DateTimeFormatter settleParseFormat_1 =  DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     public final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public final static SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd");
     //获取当前年
@@ -120,8 +122,21 @@ public class DateUtil {
     }
 
     //获取下一天
+    public static String NOW_1(){
+        return LocalDateTime.now().format(settleParseFormat_1);
+    }
+
+    //获取下一天
     public static Long NOW_LONG(){
         return LocalDateTime.now().toInstant(ZoneOffset.of("+8")).toEpochMilli();
+    }
+
+    public static String FirstDay(String dateTime){
+        return LocalDateTime.parse(dateTime,settleParseFormat).toLocalDate().with(TemporalAdjusters.firstDayOfMonth()).format(settleParseDateFormat);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(FirstDay("2023-02-22 17:30:45"));
     }
 
 }

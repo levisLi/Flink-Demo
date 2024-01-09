@@ -1,8 +1,10 @@
 package com.galaxy.neptune.flink.utils;
 
+import com.galaxy.neptune.flink.bean.CommandArgs;
 import com.galaxy.neptune.flink.config.FlinkParamsConstants;
 import com.galaxy.neptune.flink.enums.FlinkModelEnum;
 import com.galaxy.neptune.flink.enums.SourceModelEnum;
+import com.galaxy.neptune.flink.launch.DicomCloudData;
 import com.galaxy.neptune.flink.source.CustomKafkaSource;
 import com.galaxy.neptune.flink.source.generator.SourceGenerator;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
@@ -22,9 +24,12 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.EnvironmentSettings;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.rocksdb.RocksDB;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.concurrent.TimeUnit;
 
 public class FlinkEnv {
@@ -52,6 +57,17 @@ public class FlinkEnv {
         return env;
     }
 
+    public  static StreamTableEnvironment buildStreamTableEnvironment(StreamExecutionEnvironment env){
+
+        EnvironmentSettings fsSettings= EnvironmentSettings.newInstance()
+                .inStreamingMode()
+                .build();
+        StreamTableEnvironment tableEnvironment = StreamTableEnvironment.create(env,fsSettings);
+        tableEnvironment.getConfig().setLocalTimeZone(ZoneId.of("Asia/Shanghai"));
+        return tableEnvironment;
+    }
+
+
     /**
      * @description: 获取flink输入数据源
      * @param env flink streamExecutionEnvironment 上下文
@@ -71,8 +87,6 @@ public class FlinkEnv {
         //1.获取执行环境
         Configuration flinkConfig = new Configuration();
         flinkConfig.setString("classloader.check-leaked-classloader","false");
-//        flinkConfig.setString(SavepointConfigOptions.SAVEPOINT_PATH, "");
-//        flinkConfig.setString(PipelineOptionsInternal.PIPELINE_FIXED_JOB_ID.key(),"fd72014d4c864993a2e5a9287b4a9c5d");
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(flinkConfig);
         env.enableCheckpointing(parameterTool.getLong(FlinkParamsConstants.CHECKPOINT.INTERVAL,60*1000L));
         EmbeddedRocksDBStateBackend embededRocksDBStateBackend = new EmbeddedRocksDBStateBackend(true);
@@ -89,11 +103,12 @@ public class FlinkEnv {
     private static StreamExecutionEnvironment buildLocalEnvironment(){
         //1.获取执行环境
         Configuration flinkConfig = new Configuration();
-        flinkConfig.setInteger(RestOptions.PORT.key(), 8081);
-        flinkConfig.setString(SavepointConfigOptions.SAVEPOINT_PATH, "file:///tmp/flink/checkpoint/fd72014d4c864993a2e5a9287b4a9c5d/chk-1/_metadata");
-        flinkConfig.setString(PipelineOptionsInternal.PIPELINE_FIXED_JOB_ID.key(),"fd72014d4c864993a2e5a9287b4a9c5d");
+        flinkConfig.setString(RestOptions.BIND_PORT, "8081-8089");
+//        flinkConfig.setInteger(RestOptions.PORT.key(), 8081);
+//        flinkConfig.setString(SavepointConfigOptions.SAVEPOINT_PATH, "file:///tmp/flink/checkpoint/fd72014d4c864993a2e5a9287b4a9c5d/chk-1/_metadata");
+//        flinkConfig.setString(PipelineOptionsInternal.PIPELINE_FIXED_JOB_ID.key(),"fd72014d4c864993a2e5a9287b4a9c5d");
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(flinkConfig);
-        env.enableCheckpointing(60*1000L);
+        env.enableCheckpointing(30*1000L);
         env.getCheckpointConfig().setCheckpointStorage("file:///tmp/flink/checkpoint");
         env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
@@ -107,6 +122,14 @@ public class FlinkEnv {
         if(!parameters.has(FlinkParamsConstants.RUN.MODEL)){
             throw new RuntimeException("flink运行模式缺失请添加参数：--flink.run.model ,参数值local(本地模式)/prod(生产模式)");
         }
+    }
+
+    public static ParameterTool getParameterTool(String[] args) throws Exception {
+        ParameterTool parameterTool = ParameterTool.fromArgs(args);
+        CommandArgs commandArgs = CommandLineUtils.parse(args, new CommandArgs());
+        String profileFile = commandArgs.getPropertiesFile();
+        ParameterTool propertiesFile = ParameterTool.fromPropertiesFile(DicomCloudData.class.getClassLoader().getResourceAsStream(profileFile));
+        return propertiesFile.mergeWith(parameterTool);
     }
 
 

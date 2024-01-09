@@ -1,4 +1,4 @@
-package com.galaxy.neptune.flink;
+package com.galaxy.neptune.flink.launch;
 
 import com.alibaba.fastjson.JSONObject;
 import com.galaxy.neptune.flink.State.OutPutTag;
@@ -7,40 +7,24 @@ import com.galaxy.neptune.flink.enums.SourceModelEnum;
 import com.galaxy.neptune.flink.function.SeriesFlatMapFunction;
 import com.galaxy.neptune.flink.source.CustomKafkaSource;
 import com.galaxy.neptune.flink.source.generator.CQDorisGenerator;
-import com.galaxy.neptune.flink.source.generator.DorisGenerator;
-import com.galaxy.neptune.flink.trigger.CountAndTimeTrigger;
-import com.galaxy.neptune.flink.utils.DateUtil;
 import com.galaxy.neptune.flink.utils.FlinkEnv;
 import org.apache.doris.flink.cfg.DorisExecutionOptions;
 import org.apache.doris.flink.cfg.DorisOptions;
 import org.apache.doris.flink.cfg.DorisReadOptions;
 import org.apache.doris.flink.sink.DorisSink;
-import org.apache.doris.flink.sink.writer.SimpleStringSerializer;
+import org.apache.doris.flink.sink.writer.serializer.SimpleStringSerializer;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
-import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
-import org.apache.flink.util.OutputTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -188,6 +172,8 @@ public class FlinkDorisDemo {
         }
         return env.fromSource(CustomKafkaSource.dataSourceStream(parameters), WatermarkStrategy.noWatermarks(), "Kafka_Source");
     }
+
+
 
     private static DorisSink<String> getReportDorisSink(){
         Properties props = new Properties();

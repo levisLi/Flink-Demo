@@ -1,0 +1,43 @@
+{
+  "data":[
+    {
+      "data_center":"CZ",
+      "data_receive_time":1672288028679,
+      "disable_flag":0,
+      "hash_id":"ReportPo_3a375547f96f5f3dbf4bb7faee94860b",
+      "organ_code":"123204044673580491",
+      "organ_name":"测试医院",
+      "result_id":"20221229000480",
+      "ris_study_id":"20221229000480",
+      "rpt_code":"20221229000480",
+      "rpt_descrip":"两肺纹理增多，两肺内⻅多发斑⽚状稍⾼密度影；右肺（Se203 img95.147）、左肺上叶（Se203 img47）⻅⼩结节影，⼤者直径约3mm；左肺下叶⻅少量条状⾼密度影；⼼影⼤>⼩形态未⻅明显异常，主动脉壁⻅⽚状⾼密度影；纵隔内未⻅明显肿⼤淋巴结，两侧肺⻔及纵隔结构未⻅异常。两侧胸膜局限性增厚。两侧胸腔未⻅明显积液。所示肝实质密度减低。",
+      "rpt_dt":1672285490000,
+      "rpt_idcard":"342522000000000629",
+      "rpt_image_count":0,
+      "rpt_name":"张三",
+      "rpt_pub_dt":1672286413000,
+      "rpt_seeing":"两肺炎症，建议治疗后复查；\r\n两肺⼩结节，建议随诊；\r\n左肺下叶少许纤维条索灶；\r\n主动脉硬化；\r\n脂肪肝。\r\n\r\n请结合临床，建议随访复查。",
+      "rpt_share":0,
+      "rpt_status":10,
+      "rpt_type":2,
+      "rv_dt":1672286413000,
+      "rv_idcard":"340322000000008840",
+      "rv_name":"张三",
+      "snapshot_count":1,
+      "system_id":"01",
+      "update_time":1672286413000
+    }
+  ],
+  "dataType":"reportInfo",
+  "index_fields":[
+    "organ_code",
+    "ris_study_id",
+    "system_id",
+    "result_id"
+  ],
+  "link_fields":[
+    "organ_code",
+    "ris_study_id",
+    "system_id"
+  ]
+}
