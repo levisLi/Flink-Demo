@@ -1,0 +1,5 @@
+--yarn-cluster模式
+flink run -d -m yarn-cluster -ys 1 -yjm 1G -ytm 2G -yqu default -ynm flinksql_dicom_engine -p 1 -sae -c com.galaxy.neptune.flink.launch.FlinkSQLEngine Flink-Demo-1.2.1.jar -f ods_dcms_dicom_data.sql -p prod.properties
+
+--yarn-per-job模式
+flink run -d -t yarn-per-job -ys 1 -yjm 1G -ytm 2G -yqu default -ynm flinksql_dicom_engine -p 1 -sae -c com.galaxy.neptune.flink.launch.FlinkSQLEngine Flink-Demo-1.2.1.jar -f ods_dcms_dicom_data.sql -p prod.properties

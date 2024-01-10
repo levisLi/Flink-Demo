@@ -6,16 +6,13 @@ import com.galaxy.neptune.flink.table.FirstDay;
 import com.galaxy.neptune.flink.table.ParserMap;
 import com.galaxy.neptune.flink.utils.CommandLineUtils;
 import com.galaxy.neptune.flink.utils.FlinkEnv;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.StatementSet;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +21,8 @@ import java.util.List;
  * @author lile
  * @description
  **/
+@Slf4j
 public class FlinkSQLEngine {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DicomCloudData.class);
     public static void main(String[] args) throws Exception {
         CommandArgs commandArgs = CommandLineUtils.parse(args, new CommandArgs());
         ParameterTool parameterTool = FlinkEnv.getParameterTool(args);
@@ -35,7 +32,6 @@ public class FlinkSQLEngine {
         StreamTableEnvironment tableEnv = FlinkEnv.buildStreamTableEnvironment(env);
         registerUDFFunction(tableEnv);
         executeTask(tableEnv,commandArgs);
-        env.execute("FlinkSQLEngine");
     }
 
     /*
@@ -46,7 +42,7 @@ public class FlinkSQLEngine {
      */
     private static void executeTask(StreamTableEnvironment tableEnv,CommandArgs commandArgs) throws IOException {
         String targetFilePath = commandArgs.getConfigFile();
-        LOGGER.info("开始执行作业任务操作job路径地址 {}",targetFilePath);
+        log.info("开始执行作业任务操作job路径地址 {}",targetFilePath);
         List<String> jobSQL = ParamConfiguration.getJobString(targetFilePath);
         StatementSet statementSet = tableEnv.createStatementSet();
         for (String sqlTask : jobSQL) {

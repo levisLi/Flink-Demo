@@ -19,8 +19,8 @@
     <flink.version>1.15.2</flink.version>
     <scala.binary.version>2.12</scala.binary.version>
     <jcommander.version>1.81</jcommander.version>
-<!--    <target.scope>compile</target.scope>-->
-    <target.scope>provided</target.scope>
+    <target.scope>compile</target.scope>
+<!--    <target.scope>provided</target.scope>-->
   </properties>
 
   <dependencies>
@@ -131,22 +131,13 @@
       <version>1.2.44</version>
     </dependency>
 
-
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.7</version>
-      <scope>runtime</scope>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.12</version>
     </dependency>
 
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.17</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
+   <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
       <version>2.13.3</version>
@@ -167,26 +158,18 @@
       <scope>provided</scope>
     </dependency>
 
-  <!--  <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-collections4</artifactId>
-      <version>4.2</version>
-    </dependency>-->
-
     <!-- https://mvnrepository.com/artifact/org.apache.doris/flink-doris-connector-1.15 -->
     <dependency>
       <groupId>org.apache.doris</groupId>
-      <artifactId>flink-doris-connector-1.15</artifactId>
-      <version>1.5.0</version>
+      <artifactId>flink-doris-connector-1.14_2.12</artifactId>
+      <version>1.1.1</version>
       <scope>provided</scope>
     </dependency>
-
 
     <dependency>
       <groupId>com.beust</groupId>
       <artifactId>jcommander</artifactId>
       <version>${jcommander.version}</version>
-      <scope>provided</scope>
     </dependency>
 
   </dependencies>
@@ -199,13 +182,24 @@
       </dependencies>
     </profile>
     <profile>
+      <id>kafka</id>
+      <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-connector-kafka -->
+        <dependency>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-connector-kafka_2.12</artifactId>
+          <version>1.14.5</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>doris</id>
       <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.doris/flink-doris-connector-1.15 -->
         <dependency>
           <groupId>org.apache.doris</groupId>
-          <artifactId>flink-doris-connector-1.15</artifactId>
-          <version>1.5.0</version>
+          <artifactId>flink-doris-connector-1.14_2.12</artifactId>
+          <version>1.1.1</version>
         </dependency>
 
       </dependencies>
@@ -218,30 +212,6 @@
           <groupId>org.apache.paimon</groupId>
           <artifactId>paimon-flink-1.14</artifactId>
           <version>0.6-SNAPSHOT</version>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>flinksql</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-          <version>1.7.7</version>
-          <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <version>1.2.17</version>
-          <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-          <groupId>com.beust</groupId>
-          <artifactId>jcommander</artifactId>
-          <version>${jcommander.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -261,7 +231,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
         <executions>
           <!-- Run shade goal on package phase -->
           <execution>
@@ -292,7 +262,7 @@
               </filters>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>com.galaxy.neptune.flink.launch.DicomCloudData</mainClass>
+                  <mainClass>com.galaxy.neptune.flink.launch.FlinkSQLEngine</mainClass>
                 </transformer>
               <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer">
               </transformer>
@@ -302,50 +272,5 @@
         </executions>
       </plugin>
     </plugins>
-
-    <pluginManagement>
-      <plugins>
-
-        <!-- This improves the out-of-the-box experience in Eclipse by resolving some warnings. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <versionRange>[3.0.0,)</versionRange>
-                    <goals>
-                      <goal>shade</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <versionRange>[3.1,)</versionRange>
-                    <goals>
-                      <goal>testCompile</goal>
-                      <goal>compile</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore/>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 </project>
