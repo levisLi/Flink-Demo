@@ -17,6 +17,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <flink.version>1.15.2</flink.version>
+    <flink.binary.version>1.15</flink.binary.version>
     <scala.binary.version>2.12</scala.binary.version>
     <jcommander.version>1.81</jcommander.version>
     <target.scope>compile</target.scope>
@@ -161,8 +162,8 @@
     <!-- https://mvnrepository.com/artifact/org.apache.doris/flink-doris-connector-1.15 -->
     <dependency>
       <groupId>org.apache.doris</groupId>
-      <artifactId>flink-doris-connector-1.14_2.12</artifactId>
-      <version>1.1.1</version>
+      <artifactId>flink-doris-connector-${flink.binary.version}</artifactId>
+      <version>1.2.1</version>
       <scope>provided</scope>
     </dependency>
 
@@ -184,11 +185,11 @@
     <profile>
       <id>kafka</id>
       <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.apache.flink/flink-connector-kafka -->
+        <!-- https://mvnrepository.com/artifact/org.apache.doris/flink-doris-connector-1.15 -->
         <dependency>
           <groupId>org.apache.flink</groupId>
-          <artifactId>flink-connector-kafka_2.12</artifactId>
-          <version>1.14.5</version>
+          <artifactId>flink-connector-kafka</artifactId>
+          <version>${flink.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -198,8 +199,8 @@
         <!-- https://mvnrepository.com/artifact/org.apache.doris/flink-doris-connector-1.15 -->
         <dependency>
           <groupId>org.apache.doris</groupId>
-          <artifactId>flink-doris-connector-1.14_2.12</artifactId>
-          <version>1.1.1</version>
+          <artifactId>flink-doris-connector-${flink.binary.version}</artifactId>
+          <version>1.2.1</version>
         </dependency>
 
       </dependencies>
@@ -210,7 +211,7 @@
         <!-- https://mvnrepository.com/artifact/org.apache.paimon/paimon-flink-1.17 -->
         <dependency>
           <groupId>org.apache.paimon</groupId>
-          <artifactId>paimon-flink-1.14</artifactId>
+          <artifactId>paimon-flink-${flink.binary.version}</artifactId>
           <version>0.6-SNAPSHOT</version>
         </dependency>
       </dependencies>
